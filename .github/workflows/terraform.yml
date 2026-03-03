@@ -1,4 +1,7 @@
 name: Terraform
+permissions:
+  id-token: write
+  contents: read
 
 on:
   push:
@@ -10,6 +13,16 @@ on:
   workflow_dispatch:
 
 jobs:
+  aws_oidc_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::952625891451:role/github-actions-devops-l4-readonly
+          aws-region: us-east-1
+      - name: Verify identity
+        run: aws sts get-caller-identity
   terraform_validate:
     runs-on: ubuntu-latest
     steps:

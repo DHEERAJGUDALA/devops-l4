@@ -1,4 +1,5 @@
 name: Terraform
+
 permissions:
   id-token: write
   contents: read
@@ -23,10 +24,15 @@ jobs:
           aws-region: us-east-1
       - name: Verify identity
         run: aws sts get-caller-identity
+
   terraform_validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::952625891451:role/github-actions-devops-l4-readonly
+          aws-region: us-east-1
       - uses: hashicorp/setup-terraform@v3
       - run: terraform init
       - run: terraform validate
@@ -36,6 +42,10 @@ jobs:
     needs: terraform_validate
     steps:
       - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::952625891451:role/github-actions-devops-l4-readonly
+          aws-region: us-east-1
       - uses: hashicorp/setup-terraform@v3
       - run: terraform init
       - run: terraform plan -no-color -out=tfplan
@@ -52,6 +62,10 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::952625891451:role/github-actions-devops-l4-readonly
+          aws-region: us-east-1
       - uses: hashicorp/setup-terraform@v3
       - run: terraform init
       - name: Download plan
